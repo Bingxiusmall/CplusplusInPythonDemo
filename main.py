@@ -81,7 +81,7 @@ class istream:
                     ctypes.memset(addr, value, 1)
             else:
                 __type = str(type(other))[8:-2]
-                raise (RuntimeError(
+                raise (InputError(
                     "\'" + __type + "\' object cannot be used in function \'cin\', you can try \'int\' object or \'str\' object"))
         except Exception as e:
             raise (RuntimeError(e))
@@ -134,7 +134,7 @@ class istream:
                 ctypes.memset(addr, value, 1)
         else:
             __type = str(type(other))[8:-2]
-            raise (RuntimeError(
+            raise (InputError(
                 "\'" + __type + "\' object cannot be used in function \'cin\', you can try \'str\' object"))
         self.id_inputs = id(__inputs)
         return self
@@ -147,7 +147,15 @@ class istream:
 
 class stdio:
     def __init__(self, stream):
-        self.stream=stream
+        self.stream = stream
+ 
+
+class FileError(Exception):
+    pass
+
+
+class InputError(Exception):
+    pass
 
 
 def getline(self, other, ending=None):
@@ -193,7 +201,7 @@ def getline(self, other, ending=None):
             ctypes.memset(addr, value, 1)
     else:
         __type = str(type(other))[8:-2]
-        raise (RuntimeError(
+        raise (InputError(
             "\'" + __type + "\' object cannot be used in function \'getline\', you can try \'str\' object"))
     cin.reinput(id(__inputs))
 
@@ -229,7 +237,7 @@ def freopen(path, mode, stream=None):
             file.truncate()
             sys.stderr = file
     else:
-        raise(RuntimeError("fmode must be stdin, stdout or stderr, but not " + str(mode)))
+        raise(FileError("fmode must be stdin, stdout or stderr, but not " + str(mode)))
 
 
 def fclose(stream):
@@ -243,7 +251,10 @@ def fclose(stream):
         stderror = None
         sys.stderr = python_stderr
     else:
-        raise(RuntimeError("fmode must be stdin, stdout or stderr, but not " + str(mode)))
+        if type(stream) == type(stdin):
+            raise(FileError("stream must be stdin, stdout or stderr, but not stdio." + str(stream.stream)))
+        else:
+            raise(FileError("stream must be stdin, stdout or stderr, but not " + str(type(stream))[1:-1]))
 
 
 __inputs = []
