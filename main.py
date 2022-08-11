@@ -1,5 +1,6 @@
 import ctypes
 import io
+import math
 import sys
 import re
 
@@ -43,7 +44,7 @@ class istream:
                         break
                     __inputs.pop(0)
                 if len(__inputs) == 0:
-                    if stdinput!=None:
+                    if stdinput != None:
                         __input = input()
                     for i in re.split(' ', __input):
                         __inputs.append(i)
@@ -92,7 +93,7 @@ class istream:
         global __inputs
         if type(other) == type("string"):
             if len(__inputs) == 0:
-                if stdinput==None:
+                if stdinput == None:
                     __input = input()
                 for i in re.split(' ', __input):
                     __inputs.append(i)
@@ -148,7 +149,7 @@ class istream:
 class stdio:
     def __init__(self, stream):
         self.stream = stream
- 
+
 
 class FileError(Exception):
     pass
@@ -163,7 +164,7 @@ def getline(self, other, ending=None):
     __value = ctypes.cast(cin.id_inputs, ctypes.py_object).value
     if type(other) == type("string"):
         if len(__inputs) == 0:
-            if stdinput==None:
+            if stdinput == None:
                 __input = input()
             for i in re.split(' ', __input):
                 __inputs.append(i)
@@ -208,53 +209,81 @@ def getline(self, other, ending=None):
 
 def freopen(path, mode, stream=None):
     global stdinput, stdoutput, stderror, __inputs
-    if stream!=None:
+    if stream != None:
         fmode = stream
     else:
-        if mode=="r":
+        if mode == "r":
             fmode = stdin;
         else:
             fmode = stdout;
-    if fmode==stdin:
+    if fmode == stdin:
         stdinput = path
         with io.open(stdinput, "r") as file:
             finput = file.read()
         finput_list = re.split(r'\n', finput)
-        while len(finput_list)>0:
+        while len(finput_list) > 0:
             __inputs.append(finput_list[0])
             finput_list.pop(0)
-            if len(finput_list)>0:
+            if len(finput_list) > 0:
                 __inputs.append('\n')
         cin.reinput(__inputs)
-    elif fmode==stdout:
+    elif fmode == stdout:
         stdoutput = path
         with io.open(stdoutput, "w") as file:
             file.truncate()
             sys.stdout = file
-    elif fmode==stderr:
+    elif fmode == stderr:
         stderror = path
         with io.open(stderror, "w") as file:
             file.truncate()
             sys.stderr = file
     else:
-        raise(FileError("fmode must be stdin, stdout or stderr, but not " + str(mode)))
+        raise (FileError("fmode must be stdin, stdout or stderr, but not " + str(mode)))
 
 
 def fclose(stream):
     global stdinput, stdoutput, stderror, python_stdout, python_stderr
-    if stream==stdin:
+    if stream == stdin:
         stdinput = None
-    elif stream==stdout:
+    elif stream == stdout:
         stdoutput = None
         sys.stdout = python_stdout
-    elif stream==stderr:
+    elif stream == stderr:
         stderror = None
         sys.stderr = python_stderr
     else:
         if type(stream) == type(stdin):
-            raise(FileError("stream must be stdin, stdout or stderr, but not stdio." + str(stream.stream)))
+            raise (FileError("stream must be stdin, stdout or stderr, but not stdio." + str(stream.stream)))
         else:
-            raise(FileError("stream must be stdin, stdout or stderr, but not " + str(type(stream))[1:-1]))
+            raise (FileError("stream must be stdin, stdout or stderr, but not " + str(type(stream))[1:-1]))
+
+
+def __gcd(x, y):
+    return math.gcd(x, y)
+
+
+def log(x):
+    return math.log(x)
+
+
+def log2(x):
+    return math.log2(x)
+
+
+def log10(x):
+    return math.log10(x)
+
+
+def log1p(x):
+    return math.log1p(x)
+
+
+def exp(x):
+    return math.exp(x)
+
+
+def perm(x, k=None):
+    return math.perm(x, k)
 
 
 __inputs = []
@@ -279,4 +308,5 @@ endl = '\n'
 # > use "getline(cin,e)" or "getline(cin,e,'#')" to read a line and none-'#'.
 # > use "freopen(path,mode)" or "freopen(path,mode,stream)" to get file.[mode] must be stdin,stdout,stderr.
 # > use "fclose(stream)" to end a file reading.
+# > use "__gcd(x,y)","log(x)","log2(x)","log10(x)","log1p(x)","exp(x)","perm(x)" to do just themselves
 # There's some bugs,when you find a bug,you can ask in issues.
