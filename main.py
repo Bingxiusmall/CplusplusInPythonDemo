@@ -3,6 +3,7 @@ import io
 import math
 import sys
 import re
+import functools
 
 
 class ostream:
@@ -146,6 +147,61 @@ class istream:
         return self
 
 
+class multidef:
+    def less(a, b):
+        return a < b
+
+    def __init__(self):
+        self.__type = None
+
+    def __lt__(self, args):
+        self.__type = args[0]
+        try:
+            self.__pred = args[1]
+        except:
+            self.__pred = less
+        return self
+
+    def __gt__(self, other=None):
+        return multiset_bottle(self.__type, self.__pred)
+
+
+class multiset_bottle:
+    def __init__(self, multi_type: type, pred):
+        self.__i = None
+        self.__multiset = set()
+        self.__multiset_count = dict()
+        self.__type = multi_type
+        self.__pred = pred
+
+    def __str__(self):
+        return str(+self)
+
+    def __pos__(self):
+        self.__multilist = list()
+        for self.__i in self.__sort__():
+            self.__multilist += self.__multiset_count[self.__i]*[self.__i]
+        return self.__multilist
+
+    def insert(self, elem):
+        if type(elem) == self.__type:
+            if elem in self.__multiset:
+                self.__multiset_count[elem] += 1
+            else:
+                self.__multiset.add(elem)
+                self.__multiset_count[elem] = 1
+        else:
+            raise(MultisetInsertingError("The {} multiset object cannot insert {} object".format(self.__type, type(elem))))
+
+    def __sort__(self):
+        self.__multiset_list = list(self.__multiset)
+        return sorted(self.__multiset_list, key=functools.cmp_to_key(self.__pred))
+
+
+class MultisetInsertingError(Exception):
+    pass
+
+
 class stdio:
     def __init__(self, stream):
         self.stream = stream
@@ -157,6 +213,13 @@ class FileError(Exception):
 
 class InputError(Exception):
     pass
+
+
+def less(a, b):
+    return a < b
+
+def greater(a, b):
+    return a > b
 
 
 def getline(self, other, ending=None):
@@ -292,6 +355,7 @@ cin = istream(__inputs)
 stdin = stdio("stdin")
 stdout = stdio("stdout")
 stderr = stdio("stderr")
+multiset = multidef()
 python_stdout = sys.stdout
 python_stderr = sys.stderr
 stdinput = None
@@ -309,4 +373,12 @@ endl = '\n'
 # > use "freopen(path,mode)" or "freopen(path,mode,stream)" to get file.[mode] must be stdin,stdout,stderr.
 # > use "fclose(stream)" to end a file reading.
 # > use "__gcd(x,y)","log(x)","log2(x)","log10(x)","log1p(x)","exp(x)","perm(x)" to do just themselves
+# > multiset descriptions:
+# > > because of some reasons of python, you need to write 'var_name = (multiset<(multi_type, cmp(optional, but the
+# > > > comma in front of this must be there, or not python will be mistaken)))>None' to create a multiset object
+# > > I had already do what I can, but I cannot do opposite python grammar :(
+# > > use 'insert(elem)' to insert an element
+# > > use 'var_name' to get a string of the multiset object
+# > > use '+var_name(there is a plus in front of var_name)' to get a list of the multiset object
+# > > just these, other I haven't do, wait to see XD
 # There's some bugs,when you find a bug,you can ask in issues.
