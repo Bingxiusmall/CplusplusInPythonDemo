@@ -147,32 +147,105 @@ class istream:
         return self
 
 
+# new = None
+
+def new(C_type):
+    if C_type == multiset:
+        return multiset_bottle()
+
+
+# now_C_type = ""
+
+
+class C_args:  # T:
+    def less(self, a, b):
+        return a < b
+
+    def __init__(self, *others):
+        self.list = [*others]  # T用来做中转工作，接受数据，被multiset用<，并对new用>
+        self.__type = self.list[0]
+        try:
+            self.__pred = self.list[1]
+        except:
+            self.__pred = self.less
+
+    def __gt__(self, other):
+        other._multiset_bottle__type = self.__type
+        other._multiset_bottle__pred = self.__pred
+
+
 class multidef:
-    def less(a, b):
+    def less(self, a, b):
         return a < b
 
     def __init__(self):
         self.__type = None
 
-    def __lt__(self, args):
-        self.__type = args[0]
+    def __lt__(self, *args):
+        self.list = [*args]
+        self.__type = self.list[0]
         try:
-            self.__pred = args[1]
+            self.__pred = self.list[1]
         except:
-            self.__pred = less
+            self.__pred = self.less
         return self
 
-    def __gt__(self, other=None):
-        return multiset_bottle(self.__type, self.__pred)
+    # def __lt__(self, args):
+    #     self.__type = args[0]
+    #     try:
+    #         self.__pred = args[1]
+    #     except:
+    #         self.__pred = less
+    #     return self
+
+    # def __gt__(self):  # , other):  # =None):
+    #     return multiset_bottle(self.__type, new.__pred)  # , other.__pred)  # self.__pred)
+
+
+multiset = multidef()
+
+
+# def new(constructor):
+#     if constructor == multiset:
+#         class multiset_obj:
+#             def __init__(self):
+#                 self.list = []
+#             def __lt__(self, args):
+#                 print(args)
+#         return multiset_obj()
+
+'''
+class new_obj:
+    def __init__(self):
+        self.list = []
+
+    def less(self, a, b):
+        return a < b
+
+    def __lt__(self, *args):
+        self.list = [*args]
+        self.__type = self.list[0]
+        try:
+            self.__pred = self.list[1]
+        except:
+            self.__pred = self.less
+        return self
+
+    def __gt__(self):  # , other):
+        return multiset_bottle(self.__type, multiset.__pred)  # other.__pred)
+'''
+
+
+# new = new_obj()
 
 
 class multiset_bottle:
-    def __init__(self, multi_type: type, pred):
+    def __init__(self):  # , multi_type: type, pred):
         self.__i = None
         self.__multiset = set()
         self.__multiset_count = dict()
-        self.__type = multi_type
-        self.__pred = pred
+        self.__type = None  # multi_type
+        self.__pred = None  # pred
 
     def __str__(self):
         return str(+self)
@@ -180,7 +253,7 @@ class multiset_bottle:
     def __pos__(self):
         self.__multilist = list()
         for self.__i in self.__sort__():
-            self.__multilist += self.__multiset_count[self.__i]*[self.__i]
+            self.__multilist += self.__multiset_count[self.__i] * [self.__i]
         return self.__multilist
 
     def insert(self, elem):
@@ -191,7 +264,8 @@ class multiset_bottle:
                 self.__multiset.add(elem)
                 self.__multiset_count[elem] = 1
         else:
-            raise(MultisetInsertingError("The {} multiset object cannot insert {} object".format(self.__type, type(elem))))
+            raise (MultisetInsertingError(
+                "The {} multiset object cannot insert {} object".format(self.__type, type(elem))))
 
     def __sort__(self):
         self.__multiset_list = list(self.__multiset)
@@ -217,6 +291,7 @@ class InputError(Exception):
 
 def less(a, b):
     return a < b
+
 
 def greater(a, b):
     return a > b
@@ -355,7 +430,6 @@ cin = istream(__inputs)
 stdin = stdio("stdin")
 stdout = stdio("stdout")
 stderr = stdio("stderr")
-multiset = multidef()
 python_stdout = sys.stdout
 python_stderr = sys.stderr
 stdinput = None
@@ -363,6 +437,32 @@ stdoutput = None
 stderror = None
 endl = '\n'
 
+# 测试代码
+# testcode
+x = new(multiset)
+multiset<C_args(str, greater)> x;
+cout << x << "\n";
+for i in range(10):
+    x.insert('114514')
+x.insert('5')
+print(+x)
+
+# 使用方法
+# 复刻函数：
+#     cin、cout、cin.getline()、getline(cin)、freopen()、fclose()、__gcd()、log()、log2()、log10()、log1p()、exp()、perm()
+# 复刻类型：
+#     multiset(未做完)
+# cin.getline()和getline(cin)都仅可用于string类型的变量中
+# 所有输入函数均直接用memset改变内存，会将该变量原地址内容强行改为输入值，所以之后再使用该值会自动变为变量改变后的值
+# multiset说明：
+#     由于python原因，需要写为:
+#         >>> var_name = new(multiset);
+#         >>> multiset<C_args(multi_type, cmp(可以不填，默认less，内置Compare函数: greater))> var_name;
+#     已经尽力了，只是实在拿python的奇奇怪怪的阅读方法没办法
+#     用insert(elem)插入
+#     直接写var_name获取字符串形式的multiset对象
+#     用+var_name(前面多一个加号)获取列表形式的multiset对象
+#     其他功能还没做，暂时不能用
 
 # Here to program :)
 # How to use?
@@ -374,8 +474,9 @@ endl = '\n'
 # > use "fclose(stream)" to end a file reading.
 # > use "__gcd(x,y)","log(x)","log2(x)","log10(x)","log1p(x)","exp(x)","perm(x)" to do just themselves
 # > multiset descriptions:
-# > > because of some reasons of python, you need to write 'var_name = (multiset<(multi_type, cmp(optional, but the
-# > > > comma in front of this must be there, or not python will be mistaken)))>None' to create a multiset object
+# > > because of some reasons of python, you need to write 'var_name = new(multiset);
+# > >                                                       multiset<C_args(multi_type, cmp(optional, if no cmp, it will be
+# > > >                                                         less (built-in: greater))> var_name;' to create a multiset object
 # > > I had already do what I can, but I cannot do opposite python grammar :(
 # > > use 'insert(elem)' to insert an element
 # > > use 'var_name' to get a string of the multiset object
